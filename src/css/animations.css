@@ -1,0 +1,36 @@
+/* ===============================================
+   EVE AI - Animations Stylesheet
+   =============================================== */
+
+/* Keyframe Animations */
+@keyframes loadProgress {
+    0% {
+        width: 0%;
+    }
+    100% {
+        width: 100%;
+    }
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-20px);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* Float Animation Class */
+.animate-float {
+    animation: float 6s ease-in-out infinite;
+}

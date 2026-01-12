@@ -1,0 +1,117 @@
+/* ===============================================
+   EVE AI - Video Section Styles
+   =============================================== */
+
+/* Video Curtain */
+#video-curtain {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    background-color: #000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 1.5s ease-in-out;
+}
+
+#video-curtain.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Cinematic Text Container */
+#cinematic-text-container {
+    position: absolute;
+    inset: 0;
+    z-index: 20;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    overflow: hidden;
+}
+
+/* Video Headline Animation */
+#video-headline {
+    position: absolute;
+    transition: all 1.5s cubic-bezier(0.25, 1, 0.5, 1);
+    transform-origin: center center;
+    width: 100%;
+    text-align: center;
+}
+
+.text-sliding-part {
+    transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Reading Mode (Big & Center) */
+.mode-reading #video-headline {
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+}
+
+.mode-reading .text-sliding-part {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Playing Mode (Top Left Corner) */
+.mode-playing #video-headline {
+    top: 8%;
+    left: 5%;
+    transform: translate(0, 0) scale(0.4);
+    text-align: left;
+    width: auto;
+    transform-origin: top left;
+}
+
+.mode-playing .text-sliding-part {
+    transform: translateX(100vw);
+    opacity: 0;
+}
+
+/* Hidden Mode */
+.mode-hidden #video-headline {
+    opacity: 0;
+}
+
+.mode-hidden .text-sliding-part {
+    opacity: 0;
+}
+
+/* Video Click Overlay */
+#video-click-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 15;
+    cursor: pointer;
+}
+
+/* Navigation Dots */
+.nav-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    pointer-events: auto;
+}
+
+.nav-dot:hover {
+    background-color: rgba(255, 255, 255, 0.6);
+    transform: scale(1.2);
+}
+
+.nav-dot.active {
+    background-color: #2563eb;
+    border-color: #2563eb;
+    transform: scale(1.4);
+    box-shadow: 0 0 10px #2563eb;
+}

@@ -3,160 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="EVE AI - The first emotional AI life partner with spatial intelligence and holographic presence.">
+    <meta name="keywords" content="AI, emotional intelligence, holographic AI, smart home, EVE AI">
     <title>EVE AI | The Living Intelligence</title>
     
+    <!-- External Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
     
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Outfit:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        eveBlue: '#2563eb',
-                        eveDark: '#0a0a0a',
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        heading: ['Outfit', 'sans-serif'],
-                    },
-                    animation: {
-                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                        'float': 'float 6s ease-in-out infinite',
-                        'spin-slow': 'spin 3s linear infinite',
-                    },
-                    dropShadow: {
-                        '3d': '0 4px 3px rgba(0, 0, 0, 0.07)',
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
-        body { 
-            transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1), color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            overflow-x: hidden; background-color: #050505; 
-        }
-        section, footer { scroll-snap-align: start; scroll-snap-stop: always; }
-        #canvas-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
-        footer { position: relative; z-index: 50; }
-        ::-webkit-scrollbar { width: 0px; background: transparent; }
-
-        /* Loader */
-        #loader { position: fixed; inset: 0; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.8s ease-out, visibility 0.8s; }
-        .loader-bar { width: 200px; height: 2px; margin-top: 20px; position: relative; overflow: hidden; }
-        .loader-progress { position: absolute; left: 0; top: 0; height: 100%; width: 0%; animation: loadProgress 2s ease-in-out forwards; }
-        @keyframes loadProgress { 0% { width: 0%; } 100% { width: 100%; } }
-
-        .reveal { opacity: 0; transform: translateY(40px); transition: all 1s cubic-bezier(0.16, 1, 0.3, 1); }
-        .reveal.active { opacity: 1; transform: translateY(0); }
-
-        /* --- IMMERSION STYLES --- */
-        #video-curtain {
-            position: absolute; inset: 0; z-index: 10; 
-            background-color: #000; 
-            opacity: 0; pointer-events: none; transition: opacity 1.5s ease-in-out;
-        }
-        #video-curtain.active { opacity: 1; pointer-events: auto; }
-
-        #cinematic-text-container {
-            position: absolute; inset: 0; z-index: 20; pointer-events: none;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            text-align: center; overflow: hidden;
-        }
-
-        /* --- ANIMATION LOGIC --- */
-        #video-headline {
-            position: absolute; 
-            transition: all 1.5s cubic-bezier(0.25, 1, 0.5, 1);
-            transform-origin: center center;
-            width: 100%; text-align: center;
-        }
-        
-        .text-sliding-part {
-            transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1);
-            opacity: 1;
-            transform: translateX(0);
-        }
-
-        /* READING MODE (Big & Center) */
-        .mode-reading #video-headline { 
-            top: 40%; left: 50%; transform: translate(-50%, -50%) scale(1);
-            opacity: 1;
-        }
-        .mode-reading .text-sliding-part { opacity: 1; transform: translateX(0); }
-
-        /* PLAYING MODE (Top Left Corner) */
-        .mode-playing #video-headline { 
-            top: 8%; left: 5%; 
-            transform: translate(0, 0) scale(0.4); /* Scaled down significantly */
-            text-align: left; width: auto;
-            transform-origin: top left;
-        }
-        .mode-playing .text-sliding-part {
-            transform: translateX(100vw); /* Slide out right */
-            opacity: 0;
-        }
-
-        /* HIDDEN */
-        .mode-hidden #video-headline { opacity: 0; }
-        .mode-hidden .text-sliding-part { opacity: 0; }
-
-
-        /* Navigation Dots */
-        .nav-dot {
-            width: 8px; height: 8px; border-radius: 50%;
-            background-color: rgba(255,255,255,0.2);
-            border: 1px solid rgba(255,255,255,0.1);
-            transition: all 0.3s ease; cursor: pointer; pointer-events: auto; 
-        }
-        .nav-dot:hover { background-color: rgba(255,255,255,0.6); transform: scale(1.2); }
-        .nav-dot.active { background-color: #2563eb; border-color: #2563eb; transform: scale(1.4); box-shadow: 0 0 10px #2563eb; }
-
-        .buffer-loader { opacity: 0; visibility: hidden; transition: opacity 0.3s; }
-        .buffer-loader.active { opacity: 1; visibility: visible; }
-
-        /* Persona Buttons */
-        .persona-btn { 
-            transition: all 0.3s ease; 
-            opacity: 0.85; filter: grayscale(100%) brightness(1.2); 
-            background: rgba(0,0,0,0.2); color: #fff;
-            cursor: pointer; pointer-events: auto;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        .dark .persona-btn { background: rgba(255,255,255,0.1); color: #fff; }
-        .persona-btn:hover { background: rgba(255,255,255,0.15); opacity: 1; }
-        .persona-btn.active { 
-            opacity: 1; filter: grayscale(0%); transform: scale(1.05); 
-            background: #fff; color: #000; border-color: #fff;
-        }
-        .dark .persona-btn.active { background: #fff; color: #000; }
-        .persona-btn .indicator { transition: all 0.3s; }
-        .persona-btn.active .indicator { box-shadow: 0 0 15px currentColor; }
-
-        /* Play Pause Button */
-        .control-btn {
-            width: 50px; height: 50px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            background: rgba(255,255,255,0.1); backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.2); color: white;
-            transition: all 0.3s ease; cursor: pointer; pointer-events: auto;
-            z-index: 60; 
-        }
-        .control-btn:hover { background: rgba(255,255,255,0.3); transform: scale(1.1); }
-
-        #video-click-overlay { position: absolute; inset: 0; z-index: 15; cursor: pointer; }
-    </style>
+    <!-- Tailwind Configuration -->
+    <script src="src/js/config/tailwind.config.js"></script>
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="src/css/main.css">
+    <link rel="stylesheet" href="src/css/animations.css">
+    <link rel="stylesheet" href="src/css/video-section.css">
+    <link rel="stylesheet" href="src/css/components.css">
 </head>
 <body class="bg-white text-slate-900 dark:bg-[#050505] dark:text-slate-50 antialiased font-sans">
 
+    <!-- Loader -->
     <div id="loader" class="bg-white dark:bg-black">
         <div class="text-xs font-bold tracking-[0.3em] text-black dark:text-white animate-pulse-slow font-heading">INITIALIZING EVE_OS</div>
         <div class="loader-bar bg-gray-200 dark:bg-gray-800">
@@ -164,9 +36,11 @@
         </div>
     </div>
 
+    <!-- 3D Canvas Container -->
     <div id="canvas-container"></div>
     <div class="fixed inset-0 bg-gradient-to-r from-white/90 via-transparent to-white/30 dark:from-black/90 dark:via-transparent dark:to-black/30 pointer-events-none z-0"></div>
 
+    <!-- Navigation -->
     <nav id="navbar" class="fixed w-full z-50 transition-all duration-500 py-6 px-6 md:px-12 bg-transparent backdrop-blur-sm border-b border-transparent dark:border-white/5">
         <div class="w-full max-w-[1600px] mx-auto flex justify-between items-center">
             <a href="#hero" class="text-2xl font-light tracking-widest text-black dark:text-white z-50 hover:opacity-70 transition-opacity font-heading">EVE <span class="font-bold">AI</span></a>
@@ -195,6 +69,7 @@
         </div>
     </nav>
 
+    <!-- Hero Section -->
     <section id="hero" class="relative min-h-screen flex items-center px-6 md:px-0">
         <div class="relative z-10 w-full max-w-[1600px] mx-auto grid grid-cols-1 md:grid-cols-2 items-center h-full">
             <div class="text-left reveal active flex flex-col justify-center items-start pt-20 md:pt-0 md:pl-10 lg:pl-20">
@@ -236,6 +111,7 @@
         </div>
     </section>
 
+    <!-- Immersion Section -->
     <section id="immersion" class="relative min-h-screen w-full overflow-hidden snap-start bg-black flex items-center justify-center">
         <div id="video-click-overlay" onclick="togglePlayPause()"></div>
 
@@ -252,8 +128,7 @@
             <span class="text-[10px] uppercase tracking-[0.3em] font-bold text-white/80 animate-pulse font-heading">Synchronizing Stream</span>
         </div>
 
-        <div id="video-nav-dots" class="absolute bottom-32 md:bottom-40 z-40 flex gap-4 p-2 pointer-events-auto">
-            </div>
+        <div id="video-nav-dots" class="absolute bottom-32 md:bottom-40 z-40 flex gap-4 p-2 pointer-events-auto"></div>
 
         <div class="absolute bottom-10 md:bottom-20 z-40 flex gap-4 md:gap-6 p-2 bg-white/5 backdrop-blur-md rounded-full border border-white/10 dark:border-white/5 pointer-events-auto">
             <button onclick="selectPersonaFromVideo(true)" class="persona-btn-eva persona-btn active flex items-center gap-3 px-6 py-3 rounded-full">
@@ -279,23 +154,20 @@
         </div>
 
         <div id="cinematic-text-container" class="mode-reading pointer-events-none">
-            
             <div class="text-sliding-part w-full flex flex-col items-center">
                 <span class="text-eveBlue text-sm font-bold tracking-[0.4em] uppercase mb-6 block animate-pulse" id="vid-mode-text">Connection Mode</span>
             </div>
 
-            <h2 id="video-headline" class="font-heading text-6xl md:text-9xl font-extralight text-white tracking-tight mb-8 drop-shadow-2xl">
-                </h2>
+            <h2 id="video-headline" class="font-heading text-6xl md:text-9xl font-extralight text-white tracking-tight mb-8 drop-shadow-2xl"></h2>
             
             <div class="text-sliding-part w-full flex flex-col items-center">
-                <p id="video-subtext" class="text-white/90 text-xl md:text-2xl max-w-2xl mx-auto leading-relaxed font-light mb-12 drop-shadow-md">
-                    </p>
-                <p id="video-extra" class="text-white/50 text-xs uppercase tracking-[0.3em] font-heading">
-                     </p>
+                <p id="video-subtext" class="text-white/90 text-xl md:text-2xl max-w-2xl mx-auto leading-relaxed font-light mb-12 drop-shadow-md"></p>
+                <p id="video-extra" class="text-white/50 text-xs uppercase tracking-[0.3em] font-heading"></p>
             </div>
         </div>
     </section>
 
+    <!-- Capabilities Section -->
     <section id="capabilities" class="relative min-h-screen flex items-center bg-slate-50/90 dark:bg-[#0a0a0a]/90 backdrop-blur-sm">
         <div class="max-w-7xl mx-auto px-6 w-full">
             <div class="text-center mb-16 md:mb-24 reveal">
@@ -322,6 +194,7 @@
         </div>
     </section>
 
+    <!-- Spatial Section -->
     <section id="spatial" class="relative min-h-screen flex items-center bg-white dark:bg-black py-12 md:py-0 overflow-hidden">
         <div class="max-w-7xl mx-auto px-6 w-full grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-24 items-center">
             <div class="reveal order-2 md:order-1">
@@ -352,6 +225,7 @@
         </div>
     </section>
 
+    <!-- Footer -->
     <footer id="invest" class="py-20 bg-gray-100 dark:bg-[#111] border-t border-gray-200 dark:border-white/10 snap-start transition-colors duration-500">
         <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-12">
             <div class="col-span-1 md:col-span-2">
@@ -381,639 +255,7 @@
         </div>
     </footer>
 
-    <script>
-        // --- GLOBAL STATE ---
-        const VIDEO_BASE_PATH = 'public/bg/video/';
-        
-        const state = {
-            isEva: true,
-            userHasInteracted: false, 
-            soundAllowed: false,
-            videoSectionInView: false,
-            autoSwitchInterval: null,
-            playlists: { eva: [], eve: [] },
-            indices: { eva: 0, eve: 0 },
-            lazyLoadTriggered: false,
-            isPlaying: false,      
-            manualPause: false,    
-            sequenceTimer: null,   
-            inReadingPhase: false  
-        };
-
-        const personalityContent = {
-            eva: {
-                status: "EVA Online",
-                headline: "She is <br> <span class='font-light text-slate-400 dark:text-slate-500 italic'>Everywhere.</span>",
-                subtext: "The first emotional AI life partner. Eva learns from your feelings, remembers your moments, and manages your home with care.",
-                btn: "Meet Eva",
-                capabilitiesTitle: "Empathy",
-                card1: { title: "Emotional Recall", desc: "Eva remembers how you felt during every conversation, creating a lifelong emotional bond that deepens over time." },
-                card2: { title: "Comfort Management", desc: "Eva manages lighting and climate to match your mood. Soft lights for relaxation, bright for focus." },
-                card3: { title: "Intuitive Care", desc: "She anticipates your needs before you ask. From ordering groceries to suggesting a break when you're stressed." }
-            },
-            eve: {
-                status: "EVE Online",
-                headline: "He is <br> <span class='font-light text-slate-400 dark:text-slate-500 italic'>Everywhere.</span>",
-                subtext: "The ultimate secure home guardian. Eve optimizes your ecosystem, protects your privacy, and ensures tactical efficiency.",
-                btn: "Meet Eve",
-                capabilitiesTitle: "Security",
-                card1: { title: "Tactical Monitoring", desc: "Eve continuously scans perimeter sensors and network traffic, identifying threats before they materialize." },
-                card2: { title: "System Optimization", desc: "Maximizes energy efficiency and network latency. Eve ensures your home operates at peak performance." },
-                card3: { title: "Strategic Logic", desc: "He provides data-driven advice for your schedule, finances, and health, removing chaos from your daily life." }
-            }
-        };
-
-        const vidEva = document.getElementById('vid-eva');
-        const vidEve = document.getElementById('vid-eve');
-        const textContainer = document.getElementById('cinematic-text-container');
-        const curtain = document.getElementById('video-curtain');
-        const bufferLoader = document.getElementById('video-buffer-loader');
-        const navDotsContainer = document.getElementById('video-nav-dots');
-        const controlBtn = document.getElementById('video-control-btn');
-
-        const elHeadline = document.getElementById('video-headline');
-        const elSubtext = document.getElementById('video-subtext');
-        const elExtra = document.getElementById('video-extra');
-
-        // --- 1. PERSISTENCE & INIT ---
-        function checkPersistence() {
-            const savedPersona = localStorage.getItem('eve_persona');
-            if (savedPersona) {
-                state.isEva = savedPersona === 'eva';
-                state.userHasInteracted = true; 
-                updateStaticContent(state.isEva);
-                updateUIButtons(state.isEva);
-            } else {
-                state.isEva = true;
-                state.userHasInteracted = false;
-                updateStaticContent(true);
-                updateUIButtons(true);
-                state.autoSwitchInterval = setInterval(autoRotateHero, 8000); 
-            }
-            syncVideoVisibility(); // Ensure correct video is visible
-        }
-
-        // --- 2. DATA LOADING & DOTS ---
-        async function loadPlaylists() {
-            try {
-                const response = await fetch('urls.json');
-                const data = await response.json();
-                state.playlists.eva = data.eva;
-                state.playlists.eve = data.eve;
-                
-                if(state.playlists.eva.length > 0) vidEva.src = VIDEO_BASE_PATH + state.playlists.eva[0][0];
-                if(state.playlists.eve.length > 0) vidEve.src = VIDEO_BASE_PATH + state.playlists.eve[0][0];
-
-                updateVideoTextContent(state.isEva ? 'eva' : 'eve', 0);
-                renderNavDots(); 
-            } catch (error) {
-                console.error("Failed to load urls.json.", error);
-            }
-        }
-
-        function renderNavDots() {
-            const character = state.isEva ? 'eva' : 'eve';
-            const list = state.playlists[character];
-            navDotsContainer.innerHTML = ''; 
-
-            if(!list) return;
-
-            list.forEach((_, idx) => {
-                const dot = document.createElement('div');
-                dot.className = `nav-dot ${idx === state.indices[character] ? 'active' : ''}`;
-                dot.onclick = (e) => {
-                    e.stopPropagation(); 
-                    jumpToVideo(idx);
-                };
-                navDotsContainer.appendChild(dot);
-            });
-        }
-
-        // --- 3. SELECTION LOGIC ---
-        
-        function autoRotateHero() {
-            if(state.userHasInteracted) return; 
-            const nextEva = !state.isEva;
-            state.isEva = nextEva;
-            updateStaticContent(nextEva);
-            updateUIButtons(nextEva);
-            // We do NOT sync video visibility here, as scrolling is required to start video
-        }
-
-        window.selectPersonaFromHero = function(isEva) {
-            stopAutoRotation();
-            state.isEva = isEva;
-            state.userHasInteracted = true;
-            localStorage.setItem('eve_persona', isEva ? 'eva' : 'eve');
-            
-            updateStaticContent(isEva);
-            updateUIButtons(isEva);
-            
-            // Switch without immediate play (wait for scroll)
-            syncVideoVisibility();
-            updateVideoTextContent(isEva ? 'eva' : 'eve', state.indices[isEva ? 'eva' : 'eve']);
-            renderNavDots();
-        };
-
-        window.selectPersonaFromVideo = function(isEva) {
-            if(state.isEva === isEva) return; 
-            stopAutoRotation();
-
-            state.isEva = isEva;
-            state.userHasInteracted = true;
-            localStorage.setItem('eve_persona', isEva ? 'eva' : 'eve');
-
-            updateStaticContent(isEva);
-            updateUIButtons(isEva);
-            switchVideoSource(isEva);
-        };
-
-        function stopAutoRotation() {
-            if(state.autoSwitchInterval) {
-                clearInterval(state.autoSwitchInterval);
-                state.autoSwitchInterval = null;
-            }
-            state.userHasInteracted = true;
-        }
-
-        // Dedicated Function to Enforce Background Video Sync
-        function syncVideoVisibility() {
-            if(state.isEva) {
-                vidEva.style.opacity = '1';
-                vidEve.style.opacity = '0';
-                vidEve.muted = true; // Always mute hidden
-                vidEve.pause();      // Always pause hidden
-            } else {
-                vidEve.style.opacity = '1';
-                vidEva.style.opacity = '0';
-                vidEva.muted = true;
-                vidEva.pause();
-            }
-        }
-
-        function switchVideoSource(toEva) {
-            syncVideoVisibility(); // Force UI state immediately
-            renderNavDots();
-            
-            const char = toEva ? 'eva' : 'eve';
-            state.manualPause = false; // Reset pause on deliberate switch
-
-            if(state.isPlaying || state.videoSectionInView) {
-                playVideoSequence(char, state.indices[char]);
-            } else {
-                updateVideoTextContent(char, state.indices[char]);
-            }
-        }
-
-        // --- 4. CONTROLS ---
-        function jumpToVideo(index) {
-            const character = state.isEva ? 'eva' : 'eve';
-            stopAutoRotation();
-            
-            if (state.indices[character] === index) return;
-            state.manualPause = false; // Reset pause on jump
-            updateControlIcon();
-            playVideoSequence(character, index);
-        }
-
-        function togglePlayPause() {
-            stopAutoRotation();
-            const video = state.isEva ? vidEva : vidEve;
-            
-            // Interaction implies user intent -> Set Hard Stops
-            if (state.inReadingPhase) {
-                if (state.sequenceTimer) {
-                    // PAUSE TIMER
-                    clearTimeout(state.sequenceTimer);
-                    state.sequenceTimer = null;
-                    state.manualPause = true; // Manual stop
-                } else {
-                    // RESUME TIMER
-                    state.manualPause = false; // Manual resume
-                    finishReadingPhase(video);
-                }
-            } 
-            else {
-                if(video.paused) {
-                    state.manualPause = false; // Manual resume
-                    playVideoSafe(video);
-                } else {
-                    state.manualPause = true; // Manual stop
-                    video.pause();
-                }
-            }
-            updateControlIcon();
-        }
-
-        function updateControlIcon() {
-            const video = state.isEva ? vidEva : vidEve;
-            const icon = controlBtn.querySelector('i');
-            const isTimerPaused = state.inReadingPhase && state.sequenceTimer === null;
-            
-            // Visually reflect if we are stopped/paused
-            if(state.manualPause || video.paused || isTimerPaused) {
-                icon.className = 'fas fa-play';
-            } else {
-                icon.className = 'fas fa-pause';
-            }
-        }
-
-        // --- 5. CINEMATIC SEQUENCE ---
-        function playNextInPlaylist(character) {
-            const list = state.playlists[character];
-            if (!list || list.length === 0) return;
-            const nextIndex = (state.indices[character] + 1) % list.length;
-            playVideoSequence(character, nextIndex);
-        }
-
-        function playVideoSequence(character, index) {
-            if(state.sequenceTimer) clearTimeout(state.sequenceTimer);
-            
-            const list = state.playlists[character];
-            const currentVideoEl = character === 'eva' ? vidEva : vidEve;
-            
-            state.indices[character] = index;
-            const nextData = list[index];
-
-            state.inReadingPhase = true;
-            curtain.classList.add('active'); 
-            textContainer.classList.remove('mode-playing');
-            textContainer.classList.add('mode-hidden'); 
-
-            setTimeout(() => {
-                // Ensure Correct Video is visible before playing
-                syncVideoVisibility();
-
-                updateVideoTextContent(character, index);
-                renderNavDots(); 
-                
-                currentVideoEl.src = VIDEO_BASE_PATH + nextData[0];
-                currentVideoEl.load(); 
-
-                textContainer.classList.remove('mode-hidden');
-                textContainer.classList.add('mode-reading');
-
-                // If not manually paused, start timer
-                if(!state.manualPause) {
-                    state.sequenceTimer = setTimeout(() => {
-                        finishReadingPhase(currentVideoEl);
-                    }, 6000);
-                } else {
-                    // If paused, stay in reading mode, no timer
-                    updateControlIcon(); 
-                }
-
-            }, 1000);
-        }
-
-        function finishReadingPhase(videoEl) {
-            state.inReadingPhase = false;
-            state.sequenceTimer = null;
-            
-            playVideoSafe(videoEl, () => {
-                curtain.classList.remove('active'); 
-                textContainer.classList.remove('mode-reading');
-                textContainer.classList.add('mode-playing'); 
-            });
-        }
-
-        function updateVideoTextContent(character, index) {
-            const data = state.playlists[character][index];
-            if(!data) return;
-            elHeadline.innerHTML = data[1];
-            elSubtext.innerHTML = data[2];
-            elExtra.innerHTML = data[3] || "";
-        }
-
-        // --- 6. VIDEO UTILS ---
-        function playVideoSafe(video, onSuccess) {
-            if(state.lazyLoadTriggered) video.loop = false; 
-
-            // Strict check: never play if manually paused
-            if(state.manualPause) {
-                updateControlIcon();
-                return;
-            }
-
-            const attemptPlay = () => {
-                hideBufferLoader();
-                video.play().then(() => {
-                    if(onSuccess) onSuccess();
-                    updateControlIcon();
-                }).catch(e => console.log("Play interrupted", e));
-                
-                if(state.soundAllowed) video.muted = false;
-            };
-
-            if (video.readyState >= 3) { 
-                attemptPlay();
-            } else {
-                showBufferLoader();
-                video.pause();
-                const onCanPlay = () => {
-                    hideBufferLoader();
-                    attemptPlay();
-                };
-                video.addEventListener('canplay', onCanPlay, { once: true });
-            }
-        }
-
-        function showBufferLoader() { bufferLoader.classList.add('active'); }
-        function hideBufferLoader() { bufferLoader.classList.remove('active'); }
-
-        function startExperience() {
-            state.isPlaying = true;
-            state.soundAllowed = true;
-            stopAutoRotation(); 
-
-            document.getElementById('sound-permission').style.opacity = '0';
-            controlBtn.style.opacity = '1'; 
-            setTimeout(() => { document.getElementById('sound-permission').style.display = 'none'; }, 500);
-
-            state.lazyLoadTriggered = true;
-            const char = state.isEva ? 'eva' : 'eve';
-            
-            // Force reset manual pause on explicit start
-            state.manualPause = false; 
-            playVideoSequence(char, state.indices[char]);
-        }
-
-        // --- LISTENERS ---
-        vidEva.addEventListener('ended', () => { playNextInPlaylist('eva'); });
-        vidEve.addEventListener('ended', () => { playNextInPlaylist('eve'); });
-
-        // --- SMART PAUSE ---
-        const videoObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                state.videoSectionInView = entry.isIntersecting;
-                const video = state.isEva ? vidEva : vidEve;
-
-                if (entry.isIntersecting) {
-                    state.lazyLoadTriggered = true;
-                    // Strict Auto-Resume Logic: Only if STARTED and NOT PAUSED
-                    if (state.isPlaying && !state.manualPause) {
-                        // Resume visual elements
-                        if(textContainer.classList.contains('mode-hidden') && !curtain.classList.contains('active')) {
-                             textContainer.classList.add('visible');
-                             textContainer.classList.add('mode-playing');
-                        }
-                        if (!state.inReadingPhase) playVideoSafe(video);
-                    }
-                } else {
-                    // Always pause background when out of view (saves resources)
-                    // But DO NOT toggle manualPause state here
-                    vidEva.pause();
-                    vidEve.pause();
-                    updateControlIcon();
-                }
-            });
-        }, { threshold: 0.5 });
-
-        videoObserver.observe(document.getElementById('immersion'));
-
-        // --- STATIC CONTENT & THEME ---
-        function updateStaticContent(isEva) {
-            const data = isEva ? personalityContent.eva : personalityContent.eve;
-            const elements = ['system-status-text', 'hero-headline', 'hero-subtext', 'hero-cta', 'capabilities-title', 'card-1-title', 'card-1-desc', 'card-2-title', 'card-2-desc', 'card-3-title', 'card-3-desc'];
-
-            elements.forEach(id => {
-                const el = document.getElementById(id);
-                if(el) { el.classList.add('text-content-swap'); el.classList.add('hidden'); }
-            });
-
-            setTimeout(() => {
-                document.getElementById('system-status-text').textContent = data.status;
-                document.getElementById('hero-headline').innerHTML = data.headline;
-                document.getElementById('hero-subtext').textContent = data.subtext;
-                document.getElementById('hero-cta').textContent = data.btn;
-                document.getElementById('capabilities-title').innerHTML = `Designed for <span class="italic text-slate-400">${data.capabilitiesTitle}</span>`;
-                document.getElementById('card-1-title').textContent = data.card1.title;
-                document.getElementById('card-1-desc').textContent = data.card1.desc;
-                document.getElementById('card-2-title').textContent = data.card2.title;
-                document.getElementById('card-2-desc').textContent = data.card2.desc;
-                document.getElementById('card-3-title').textContent = data.card3.title;
-                document.getElementById('card-3-desc').textContent = data.card3.desc;
-
-                if(evaMesh && eveMesh) {
-                    evaMesh.visible = isEva;
-                    eveMesh.visible = !isEva;
-                }
-                
-                elements.forEach(id => {
-                    const el = document.getElementById(id);
-                    if(el) el.classList.remove('hidden');
-                });
-            }, 500);
-        }
-
-        function updateUIButtons(isEva) {
-            const allEvaBtns = document.querySelectorAll('.persona-btn-eva');
-            const allEveBtns = document.querySelectorAll('.persona-btn-eve');
-
-            if(isEva) { 
-                allEvaBtns.forEach(b => b.classList.add('active'));
-                allEveBtns.forEach(b => b.classList.remove('active'));
-            } else { 
-                allEveBtns.forEach(b => b.classList.add('active'));
-                allEvaBtns.forEach(b => b.classList.remove('active'));
-            }
-        }
-
-        // --- THEME ---
-        const themeToggles = document.querySelectorAll('#theme-toggle, #theme-toggle-mobile');
-        const htmlElement = document.documentElement;
-
-        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            htmlElement.classList.add('dark');
-        } else {
-            htmlElement.classList.remove('dark');
-        }
-
-        themeToggles.forEach(btn => {
-            btn.addEventListener('click', () => {
-                htmlElement.classList.toggle('dark');
-                const isDark = htmlElement.classList.contains('dark');
-                localStorage.theme = isDark ? 'dark' : 'light';
-                updateHologramBlending(isDark);
-            });
-        });
-
-        // --- INIT ---
-        window.addEventListener('load', () => {
-            checkPersistence();
-            loadPlaylists(); 
-            
-            setTimeout(() => {
-                const loaderEl = document.getElementById('loader');
-                loaderEl.style.opacity = '0';
-                loaderEl.style.visibility = 'hidden';
-                initThreeJS();
-                document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-            }, 2000);
-        });
-
-        // --- 3D LOGIC ---
-        let scene, camera, renderer, particles, characterGroup;
-        let evaMesh, eveMesh; 
-        let currentBaseScale = new THREE.Vector3(4.5, 4.5, 4.5);
-
-        const initThreeJS = () => {
-            const container = document.getElementById('canvas-container');
-            scene = new THREE.Scene();
-            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.z = 5;
-
-            renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(window.devicePixelRatio);
-            container.appendChild(renderer.domElement);
-
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-            scene.add(ambientLight);
-            const dLight = new THREE.DirectionalLight(0x3b82f6, 2.0); 
-            dLight.position.set(5, 3, 10);
-            scene.add(dLight);
-
-            const particleGeometry = new THREE.BufferGeometry();
-            const particleCount = 2000; 
-            const posArray = new Float32Array(particleCount * 3);
-            for(let i = 0; i < particleCount * 3; i+=3) {
-                posArray[i] = (Math.random() - 0.5) * 50;     
-                posArray[i+1] = (Math.random() - 0.5) * 50;   
-                posArray[i+2] = Math.random() * 100 - 50;     
-            }
-            particleGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-            const particleMaterial = new THREE.PointsMaterial({
-                size: 0.05, color: 0x88ccff, transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending
-            });
-            particles = new THREE.Points(particleGeometry, particleMaterial);
-            scene.add(particles);
-
-            characterGroup = new THREE.Group();
-            scene.add(characterGroup);
-
-            const updateCharacterPosition = () => {
-                 if (window.innerWidth >= 1024) { 
-                    characterGroup.position.set(4.5, -1.8, -3); 
-                    currentBaseScale.set(4.5, 4.5, 4.5);
-                    characterGroup.scale.copy(currentBaseScale);
-                } else if (window.innerWidth >= 768) { 
-                     characterGroup.position.set(3, -1.5, -3);
-                     currentBaseScale.set(3.8, 3.8, 3.8);
-                     characterGroup.scale.copy(currentBaseScale);
-                } else {
-                    characterGroup.position.set(0, -2.0, -3);
-                    currentBaseScale.set(3.8, 3.8, 3.8);
-                    characterGroup.scale.copy(currentBaseScale);
-                }
-            };
-            updateCharacterPosition();
-
-            const textureLoader = new THREE.TextureLoader();
-            textureLoader.load('public/bg/eva-bg.png', (texture) => {
-                const hologramMaterial = new THREE.MeshBasicMaterial({
-                    map: texture, transparent: true, side: THREE.DoubleSide, depthWrite: false
-                });
-                evaMesh = new THREE.Mesh(new THREE.PlaneGeometry(4, 4 * (texture.image.height / texture.image.width)), hologramMaterial);
-                evaMesh.visible = state.isEva;
-                characterGroup.add(evaMesh);
-                updateHologramBlending(htmlElement.classList.contains('dark'));
-            });
-
-             textureLoader.load('public/bg/eve-bg.png', (texture) => {
-                const hologramMaterial = new THREE.MeshBasicMaterial({
-                    map: texture, transparent: true, side: THREE.DoubleSide, depthWrite: false
-                });
-                eveMesh = new THREE.Mesh(new THREE.PlaneGeometry(4, 4 * (texture.image.height / texture.image.width)), hologramMaterial);
-                eveMesh.visible = !state.isEva;
-                characterGroup.add(eveMesh);
-            });
-
-            let normX = 0, normY = 0;
-            document.addEventListener('mousemove', (event) => {
-                normX = event.clientX / window.innerWidth;
-                normY = 1 - (event.clientY / window.innerHeight);
-            });
-
-            const clock = new THREE.Clock();
-            const animate = () => {
-                requestAnimationFrame(animate);
-                const elapsedTime = clock.getElapsedTime();
-                
-                const positions = particles.geometry.attributes.position.array;
-                for(let i = 2; i < positions.length; i+=3) {
-                    positions[i] += 0.2; 
-                    if(positions[i] > 5) positions[i] = -50; 
-                }
-                particles.geometry.attributes.position.needsUpdate = true;
-                particles.rotation.z += 0.0005;
-
-                if (characterGroup) {
-                    let baseY = -1.8; 
-                    if (window.innerWidth >= 768 && window.innerWidth < 1024) baseY = -1.5;
-                    if (window.innerWidth < 768) baseY = -2.0;
-                    
-                    characterGroup.position.y = baseY + Math.sin(elapsedTime * 0.8) * 0.1; 
-                    
-                    const zoomIntensity = 0.3; 
-                    const inputFactor = (normX + normY) / 2; 
-                    const targetScaleVal = currentBaseScale.x * (1 + inputFactor * zoomIntensity);
-                    
-                    const currentScale = characterGroup.scale.x;
-                    const smoothedScale = THREE.MathUtils.lerp(currentScale, targetScaleVal, 0.05);
-                    characterGroup.scale.set(smoothedScale, smoothedScale, smoothedScale);
-                    
-                    characterGroup.rotation.y = 0;
-                    characterGroup.rotation.x = 0;
-                }
-                renderer.render(scene, camera);
-            };
-            animate();
-
-            window.addEventListener('resize', () => {
-                camera.aspect = window.innerWidth / window.innerHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(window.innerWidth, window.innerHeight);
-                updateCharacterPosition();
-            });
-        };
-
-        function updateHologramBlending(isDark) {
-            const newBlending = isDark ? THREE.AdditiveBlending : THREE.NormalBlending;
-            if(evaMesh) { evaMesh.material.blending = newBlending; evaMesh.material.needsUpdate = true; }
-            if(eveMesh) { eveMesh.material.blending = newBlending; eveMesh.material.needsUpdate = true; }
-        }
-
-        const menuBtn = document.getElementById('mobile-menu-btn');
-        const mobileMenu = document.getElementById('mobile-menu');
-        const mobileLinks = document.querySelectorAll('.mobile-link');
-
-        menuBtn.addEventListener('click', () => {
-            if (mobileMenu.classList.contains('hidden')) {
-                mobileMenu.classList.remove('hidden');
-                setTimeout(() => mobileMenu.classList.remove('opacity-0'), 10); 
-                menuBtn.innerHTML = '<i class="fas fa-times"></i>'; 
-            } else {
-                mobileMenu.classList.add('opacity-0');
-                setTimeout(() => mobileMenu.classList.add('hidden'), 300); 
-                menuBtn.innerHTML = '<i class="fas fa-bars"></i>'; 
-            }
-        });
-
-        mobileLinks.forEach(link => {
-            link.addEventListener('click', () => {
-                mobileMenu.classList.add('opacity-0');
-                setTimeout(() => mobileMenu.classList.add('hidden'), 300);
-                menuBtn.innerHTML = '<i class="fas fa-bars"></i>';
-            });
-        });
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) entry.target.classList.add('active');
-            });
-        }, { threshold: 0.1 });
-
-    </script>
+    <!-- JavaScript Modules -->
+    <script type="module" src="src/js/main.js"></script>
 </body>
 </html>
